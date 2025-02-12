@@ -42,7 +42,7 @@ CREATE TABLE Network (
 ikke tested off top of head
 
 DELIMITER //
-/* Event GET */
+/* Event GET, returns events from the device with that ip*/
 CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
 BEGIN
     SELECT 
@@ -59,6 +59,37 @@ END //
 
 DELIMITER ;
 
+/* Event Post inserts new event if the device exist */
+DELIMITER $$
+
+CREATE PROCEDURE InsertEvent(
+    IN p_DeviceId INT,
+    IN p_ButtonNumber INT,
+    IN p_Status BOOL,
+    OUT p_Response VARCHAR(255)
+)
+BEGIN
+    DECLARE deviceExists INT;
+
+    -- Check if the device exists in the Device table
+    SELECT COUNT(*) INTO deviceExists
+    FROM Device
+    WHERE Id = p_DeviceId;
+
+    IF deviceExists = 1 THEN
+        -- Insert the new event if the device exists
+        INSERT INTO Event (DeviceId, Name, ButtonNumber, Status)
+        VALUES (p_DeviceId, CONCAT('Event for Device ', p_DeviceId), p_ButtonNumber, p_Status);
+
+        -- Return OK
+        SET p_Response = 'OK';
+    ELSE
+        -- Return Bad Request if the device does not exist
+        SET p_Response = 'Bad Request: DeviceId not found';
+    END IF;
+END$$
+
+DELIMITER ;
 
 
 
