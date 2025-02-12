@@ -38,3 +38,27 @@ CREATE TABLE Network (
     PRIMARY KEY (IP, DateAndTime),
     FOREIGN KEY (IP) REFERENCES Device(IP)
 );
+
+ikke tested off top of head
+
+DELIMITER //
+/* Event GET */
+CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
+BEGIN
+    SELECT 
+        E.Name AS EventName, 
+        E.ButtonNumber, 
+        E.Status
+    FROM 
+        Device D
+    INNER JOIN 
+        Event E ON D.Id = E.DeviceId
+    WHERE 
+        D.IP = inputIP;
+END //
+
+DELIMITER ;
+
+
+
+
