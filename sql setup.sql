@@ -170,6 +170,27 @@ END$$
 
 DELIMITER ;
 
+/* GET for Time Registration*/
+DELIMITER $$
+
+CREATE PROCEDURE GetTimeRegistrationByIP(IN inputIP VARCHAR(15))
+BEGIN
+    SELECT 
+        e.Name AS EventName,
+        tr.StartTime,
+        tr.EndTime
+    FROM 
+        TimeRegistration tr
+    JOIN 
+        Event e ON tr.EventId = e.Id
+    JOIN 
+        Device d ON tr.DeviceId = d.Id
+    WHERE 
+        d.IP = inputIP;
+END $$
+
+DELIMITER ;
+
 
 
 
