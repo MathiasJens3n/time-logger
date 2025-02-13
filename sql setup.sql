@@ -231,4 +231,21 @@ END $$
     
 DELIMITER ;
 
+/* POST Device */
+DELIMITER $$
+
+CREATE PROCEDURE AddDevice(
+    IN deviceName VARCHAR(255), 
+    IN deviceIP VARCHAR(15), 
+    OUT newDeviceId INT)
+BEGIN
+    -- Insert a new device into the Device table
+    INSERT INTO Device (Name, IP) 
+    VALUES (deviceName, deviceIP);
+    
+    -- Retrieve the last inserted device Id
+    SET newDeviceId = LAST_INSERT_ID();
+END $$
+
+DELIMITER ;
 
