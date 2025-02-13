@@ -41,8 +41,37 @@ CREATE TABLE Network (
 
 ikke tested off top of head
 
+/* checks if the ip is already in network table if not insert itserts it with current time for datetime, ssid and password*/
 DELIMITER //
+
+CREATE PROCEDURE AddToNetwork (
+    IN p_IP VARCHAR(15),
+    IN p_Name VARCHAR(15),
+    IN p_SSID VARCHAR(255),
+    IN p_Password VARCHAR(255)
+)
+BEGIN
+    DECLARE ip_exists INT;
+
+    -- Check if the IP already exists in the Network table
+    SELECT COUNT(*) INTO ip_exists
+    FROM Network
+    WHERE IP = p_IP;
+
+    -- If the IP does not exist, insert the data
+    IF ip_exists = 0 THEN
+        INSERT INTO Network (IP, DateAndTime, SSID, DeviceName, Password)
+        VALUES (p_IP, NOW(), p_SSID, p_Name, p_Password);
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
 /* Event GET, returns events from the device with that ip*/
+DELIMITER //
+    
 CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
 BEGIN
     SELECT 
