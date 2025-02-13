@@ -191,6 +191,25 @@ END $$
 
 DELIMITER ;
 
+/* POST for Time Registration */
+
+DELIMITER $$
+
+CREATE PROCEDURE InsertTimeRegistration (
+    IN p_EventId INT,
+    IN p_DeviceId INT,
+    IN p_StartTime DATETIME,
+    IN p_EndTime DATETIME,
+    IN p_Status BOOL
+)
+BEGIN
+    -- Insert the time registration record
+    INSERT INTO TimeRegistration (EventId, DeviceId, StartTime, EndTime, Status)
+    VALUES (p_EventId, p_DeviceId, p_StartTime, p_EndTime, p_Status);
+END $$
+
+DELIMITER ;
+
 
 
 
