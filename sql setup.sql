@@ -41,7 +41,7 @@ CREATE TABLE Network (
 
 ikke tested off top of head
 
-/* checks if the ip is already in network table if not insert itserts it with current time for datetime, ssid and password*/
+/* Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password*/
 DELIMITER //
 
 CREATE PROCEDURE AddToNetwork (
@@ -67,6 +67,22 @@ END //
 
 DELIMITER ;
 
+/* Get ssid and password from ip */
+DELIMITER //
+
+CREATE PROCEDURE GetNetworkCredentials(
+    IN inputIP VARCHAR(15),
+    OUT outputSSID VARCHAR(255),
+    OUT outputPassword VARCHAR(255)
+)
+BEGIN
+    SELECT SSID, Password
+    INTO outputSSID, outputPassword
+    FROM Network
+    WHERE IP = inputIP;
+END //
+
+DELIMITER ;
 
 
 /* Event GET, returns events from the device with that ip*/
