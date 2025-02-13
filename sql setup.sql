@@ -28,6 +28,7 @@ CREATE TABLE TimeRegistration (
     FOREIGN KEY (EventId) REFERENCES Event(Id),
     FOREIGN KEY (DeviceId) REFERENCES Device(Id)
 );
+
 -- Create the Network table
 CREATE TABLE Network (
     IP VARCHAR(15),
@@ -36,7 +37,6 @@ CREATE TABLE Network (
     DeviceName VARCHAR(255),
     Password VARCHAR(255),
     PRIMARY KEY (IP, DateAndTime),
-    FOREIGN KEY (IP) REFERENCES Device(IP)
 );
 
 ikke tested off top of head
