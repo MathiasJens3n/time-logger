@@ -39,7 +39,7 @@ CREATE TABLE Network (
     PRIMARY KEY (IP, DateAndTime),
 );
 
-ikke tested off top of head
+ikke tested lavet off top of head
 
 /* Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password*/
 DELIMITER //
@@ -192,7 +192,6 @@ END $$
 DELIMITER ;
 
 /* POST for Time Registration */
-
 DELIMITER $$
 
 CREATE PROCEDURE InsertTimeRegistration (
