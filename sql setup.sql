@@ -210,6 +210,26 @@ END $$
 
 DELIMITER ;
 
+/* Update for Time Registration */
+DELIMITER $$
 
+CREATE PROCEDURE UpdateTimeRegistration(
+    IN p_EventId INT,
+    IN p_DeviceId INT,
+    IN p_StartTime DATETIME,
+    IN p_EndTime DATETIME,
+    IN p_Status BOOL
+)
+BEGIN
+    -- Update the TimeRegistration table with the given values
+    UPDATE TimeRegistration
+    SET StartTime = p_StartTime,
+        EndTime = p_EndTime,
+        Status = p_Status
+    WHERE EventId = p_EventId
+      AND DeviceId = p_DeviceId;
+END $$
+    
+DELIMITER ;
 
 
