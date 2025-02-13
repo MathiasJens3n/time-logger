@@ -92,4 +92,39 @@ END$$
 DELIMITER ;
 
 
+/* Update event function, finds the event with the event id and device id and set it to status sent. */
+DELIMITER $$
+
+CREATE PROCEDURE UpdateEventStatus (
+    IN p_EventId INT, 
+    IN p_DeviceId INT, 
+    IN p_Status BOOL,
+    OUT p_Result VARCHAR(50)
+)
+BEGIN
+    DECLARE v_Exists INT;
+
+    -- Check if the EventId and DeviceId combination exists
+    SELECT COUNT(*)
+    INTO v_Exists
+    FROM Event
+    WHERE Id = p_EventId AND DeviceId = p_DeviceId;
+
+    -- If the event exists, update its status
+    IF v_Exists > 0 THEN
+        UPDATE Event
+        SET Status = p_Status
+        WHERE Id = p_EventId AND DeviceId = p_DeviceId;
+
+        SET p_Result = 'OK';
+    ELSE
+        -- If the event does not exist, return an error message
+        SET p_Result = 'Bad Request: EventId and DeviceId do not match.';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
+
 
