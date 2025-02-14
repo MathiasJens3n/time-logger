@@ -50,19 +50,9 @@ CREATE PROCEDURE AddToNetwork (
     IN p_SSID VARCHAR(255),
     IN p_Password VARCHAR(255)
 )
-BEGIN
-    DECLARE ip_exists INT;
-
-    -- Check if the IP already exists in the Network table
-    SELECT COUNT(*) INTO ip_exists
-    FROM Network
-    WHERE IP = p_IP;
-
-    -- If the IP does not exist, insert the data
-    IF ip_exists = 0 THEN
+BEGIN  
         INSERT INTO Network (IP, DateAndTime, SSID, DeviceName, Password)
         VALUES (p_IP, NOW(), p_SSID, p_Name, p_Password);
-    END IF;
 END //
 
 DELIMITER ;
