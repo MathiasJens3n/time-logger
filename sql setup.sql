@@ -1,14 +1,14 @@
--- Create the database
+/*Create the database*/
 CREATE DATABASE TimeLogger;
--- Use the database
+/*Use the database*/
 USE TimeLogger;
--- Create the Device table
+/*Create the Device table*/
 CREATE TABLE Device (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     Name VARCHAR(255),
     IP VARCHAR(15)
 );
--- Create the Event table
+/*Create the Event table*/
 CREATE TABLE Event (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     DeviceId INT,
@@ -17,7 +17,7 @@ CREATE TABLE Event (
     Status BOOL,
     FOREIGN KEY (DeviceId) REFERENCES Device(Id)
 );
--- Create the TimeRegistration table
+/*Create the TimeRegistration table*/
 CREATE TABLE TimeRegistration (
     Id INT AUTO_INCREMENT PRIMARY KEY,
     EventId INT,
@@ -29,19 +29,19 @@ CREATE TABLE TimeRegistration (
     FOREIGN KEY (DeviceId) REFERENCES Device(Id)
 );
 
--- Create the Network table
+/*Create the Network table*/
 CREATE TABLE Network (
     IP VARCHAR(15),
     DateAndTime DATETIME,
     SSID VARCHAR(255),
     DeviceName VARCHAR(255),
     Password VARCHAR(255),
-    PRIMARY KEY (IP, DateAndTime),
+    PRIMARY KEY (IP, DateAndTime)
 );
 
 
 
---Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password
+/*Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password*/
 DELIMITER //
 
 CREATE PROCEDURE AddToNetwork (
@@ -57,11 +57,11 @@ END //
 
 DELIMITER ;
 
---Get a lisg of all from ip that ip
+/* Get a list of all from ip that ip */
 DELIMITER //
 
 CREATE PROCEDURE GetNetworkCredentials(
-    IN inputIP VARCHAR(15),
+    IN inputIP VARCHAR(15)
 )
 BEGIN
     SELECT*
@@ -72,7 +72,7 @@ END //
 DELIMITER ;
 
 
---Event GET, returns events from the device with that ip
+/*Event GET, returns events from the device with that ip*/
 DELIMITER //
     
 CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
@@ -91,7 +91,7 @@ END //
 
 DELIMITER ;
 
---Event Post inserts new event if the device exist
+/*Event Post inserts new event if the device exist*/
 DELIMITER $$
 
 CREATE PROCEDURE InsertEvent(
@@ -124,7 +124,7 @@ END$$
 DELIMITER ;
 
 
---Update event function, finds the event with the event id and device id and set it to status sent.
+/*Update event function, finds the event with the event id and device id and set it to status sent.*/
 DELIMITER $$
 
 CREATE PROCEDURE UpdateEventStatus (
@@ -157,7 +157,7 @@ END$$
 
 DELIMITER ;
 
---GET for Time Registration
+/*GET for Time Registration*/
 DELIMITER $$
 
 CREATE PROCEDURE GetTimeRegistrationByIP(IN inputIP VARCHAR(15))
@@ -178,7 +178,7 @@ END $$
 
 DELIMITER ;
 
---POST for Time Registration
+/*POST for Time Registration*/
 DELIMITER $$
 
 CREATE PROCEDURE InsertTimeRegistration (
@@ -196,7 +196,7 @@ END $$
 
 DELIMITER ;
 
---Update for Time Registration
+/*Update for Time Registration*/
 DELIMITER $$
 
 CREATE PROCEDURE UpdateTimeRegistration(
@@ -218,7 +218,7 @@ END $$
     
 DELIMITER ;
 
---POST Device
+/*POST Device*/
 DELIMITER $$
 
 CREATE PROCEDURE AddDevice(
