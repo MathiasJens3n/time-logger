@@ -2,53 +2,66 @@
 namespace Services;
 
 use Interfaces\INetworkRepository;
+use InvalidArgumentException;
+use RuntimeException;
 
 class NetworkService {
     private INetworkRepository $networkRepo;
-    private LoggerService $logger;
 
-    public function __construct(INetworkRepository $networkRepo, LoggerService $logger) {
+    public function __construct(INetworkRepository $networkRepo) {
         $this->networkRepo = $networkRepo;
-        $this->logger = $logger;
     }
 
+    /**
+     * Retrieve network information for a device based on its IP address.
+     *
+     * @param string $ip The IP address of the device.
+     * @return array Associative array with network info:
+     *               - IP (string)
+     *               - SSID (string)
+     *               - Password (string)
+     * @throws InvalidArgumentException If the IP address is empty.
+     * @throws RuntimeException If no network info is found.
+     */
     public function getNetwork(string $ip): array {
-        $this->logger->info("Fetching network info for IP: {$ip}");
+        if (empty($ip)) {
+            throw new InvalidArgumentException("IP address is required.");
+        }
 
         // Fetch the latest network information
         $network = $this->networkRepo->getNetwork($ip);
 
         // Check if network data exists
         if (empty($network)) {
-            $this->logger->warning("No network info found for IP: {$ip}");
-            return [];
+            throw new RuntimeException("No network info found for IP: {$ip}");
         }
 
-        // Validate SSID and Password
-        if (empty($network['SSID']) || empty($network['Password'])) {
-            $this->logger->warning("Network info retrieved but missing SSID or Password for IP: {$ip}", $network);
-            return [];
-        }
-
-        $this->logger->info("Network info successfully retrieved for IP: {$ip}", $network);
         return $network;
     }
 
-
-
+    /**
+     * Create a new network entry.
+     *
+     * @param string $ip The IP address of the device.
+     * @param string $ssid The SSID of the network.
+     * @param string $password The password of the network.
+     * @return bool True if the network was created successfully, false otherwise.
+     * @throws InvalidArgumentException If any required parameter is empty.
+     * @throws RuntimeException If network creation fails.
+     */
     public function createNetwork(string $ip, string $ssid, string $password): bool {
-        $this->logger->info("Attempting to create network for IP: {$ip}", [
-            'SSID' => $ssid,
-        ]);
-
-        $success = $this->networkRepo->saveNetwork($ip, $ssid, $password);
-
-        if ($success) {
-            $this->logger->info("Network created successfully for IP: {$ip}");
-        } else {
-            $this->logger->error("Failed to create network for IP: {$ip}");
+        // Validate input
+        if (empty($ip) || empty($ssid) || empty($password)) {
+            throw new InvalidArgumentException("IP, SSID, and Password are required fields.");
         }
 
-        return $success;
+        // Attempt to save the network
+        $success = $this->networkRepo->saveNetwork($ip, $ssid, $password);
+
+        if (!$success) {
+            throw new RuntimeException("Failed to create network for IP: {$ip}");
+        }
+
+        return true;
     }
 }

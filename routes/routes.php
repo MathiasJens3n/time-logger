@@ -25,7 +25,7 @@ $logger = new LoggerService();
 
 // Network
 $networkRepo = new NetworkRepository($db, $logger);
-$networkService = new NetworkService($networkRepo, $logger);
+$networkService = new NetworkService($networkRepo);
 $networkController = new NetworkController($networkService);
 
 $requestRouter->addRoute('GET', '/network', [$networkController, 'getNetwork']);

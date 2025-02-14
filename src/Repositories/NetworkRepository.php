@@ -22,14 +22,13 @@ class NetworkRepository implements INetworkRepository
     {
         // Call GetNetworkCredentials stored procedure
         try {
-            $stmt = $this->db->prepare('CALL GetNetworkCredentials(:ip, @outputSSID, @outputPassword)');
+            $stmt = $this->db->prepare('CALL GetNetworkCredentials(:ip)');
             $stmt->bindParam(':ip', $ip, PDO::PARAM_STR);
             $stmt->execute();
 
-            // Retrieve the output variables
-            $result = $this->db->query('SELECT @outputSSID AS SSID, @outputPassword AS Password')->fetch(PDO::FETCH_ASSOC);
+            $networks = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $result ?: [];
+            return $networks ?: [];
         } catch (PDOException $e) {
             $this->logger->error('Database error during GetNetworkCredentials', [
                 'message' => $e->getMessage(),

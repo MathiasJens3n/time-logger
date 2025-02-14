@@ -1,4 +1,4 @@
-<?php /** @noinspection ALL */
+<?php
 
 namespace Controllers;
 
@@ -11,31 +11,42 @@ class NetworkController extends BaseController {
         $this->networkService = $networkService;
     }
 
+    /**
+     * Handle GET /network
+     * Retrieves network information for a device based on its IP.
+     */
     public function getNetwork(): void {
         $ip = $_GET['ip'] ?? $_SERVER['REMOTE_ADDR'];
-        $network = $this->networkService->getNetwork($ip);
 
-        if ($network) {
+        try {
+            $network = $this->networkService->getNetwork($ip);
             $this->sendJsonResponse($network);
-        } else {
-            $this->sendJsonResponse(['Network not found'], 404);
+        } catch (\InvalidArgumentException $e) {
+            $this->sendJsonResponse(['error' => $e->getMessage()], 400);
+        } catch (\RuntimeException $e) {
+            $this->sendJsonResponse(['error' => $e->getMessage()], 404);
+        } catch (\Exception $e) {
+            $this->sendJsonResponse(['error' => 'An unexpected error occurred.'], 500);
         }
     }
 
+    /**
+     * Handle POST /network
+     * Creates a new network entry.
+     */
     public function createNetwork(): void {
         $data = $this->getRequestBody();
 
-        if (!isset($data['ssid'], $data['password'])) {
-            $this->sendJsonResponse(['Bad Request'], 400);
-        }
-
-        $ip = $_SERVER['REMOTE_ADDR'];
-        $success = $this->networkService->createNetwork($ip, $data['ssid'], $data['password']);
-
-        if ($success) {
-            $this->sendJsonResponse(['Network saved'], 201);
-        } else {
-            $this->sendJsonResponse(['Failed to save network'], 400);
+        try {
+            $ip = $_SERVER['REMOTE_ADDR'];
+            $this->networkService->createNetwork($ip, $data['ssid'] ?? '', $data['password'] ?? '');
+            $this->sendJsonResponse(['message' => 'Network saved'], 201);
+        } catch (\InvalidArgumentException $e) {
+            $this->sendJsonResponse(['error' => $e->getMessage()], 400);
+        } catch (\RuntimeException $e) {
+            $this->sendJsonResponse(['error' => $e->getMessage()], 500);
+        } catch (\Exception $e) {
+            $this->sendJsonResponse(['error' => 'An unexpected error occurred.'], 500);
         }
     }
 }
