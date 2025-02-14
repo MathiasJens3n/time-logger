@@ -57,17 +57,14 @@ END //
 
 DELIMITER ;
 
-/* Get ssid and password from ip */
+/* Get a lisg of all from ip that ip*/
 DELIMITER //
 
 CREATE PROCEDURE GetNetworkCredentials(
     IN inputIP VARCHAR(15),
-    OUT outputSSID VARCHAR(255),
-    OUT outputPassword VARCHAR(255)
 )
 BEGIN
-    SELECT SSID, Password
-    INTO outputSSID, outputPassword
+    SELECT*
     FROM Network
     WHERE IP = inputIP;
 END //
