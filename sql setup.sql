@@ -28,6 +28,7 @@ CREATE TABLE TimeRegistration (
     FOREIGN KEY (EventId) REFERENCES Event(Id),
     FOREIGN KEY (DeviceId) REFERENCES Device(Id)
 );
+
 -- Create the Network table
 CREATE TABLE Network (
     IP VARCHAR(15),
@@ -36,13 +37,47 @@ CREATE TABLE Network (
     DeviceName VARCHAR(255),
     Password VARCHAR(255),
     PRIMARY KEY (IP, DateAndTime),
-    FOREIGN KEY (IP) REFERENCES Device(IP)
 );
 
-ikke tested off top of head
+ikke tested lavet off top of head
 
+/* Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password*/
 DELIMITER //
+
+CREATE PROCEDURE AddToNetwork (
+    IN p_IP VARCHAR(15),
+    IN p_Name VARCHAR(15),
+    IN p_SSID VARCHAR(255),
+    IN p_Password VARCHAR(255)
+)
+BEGIN  
+        INSERT INTO Network (IP, DateAndTime, SSID, DeviceName, Password)
+        VALUES (p_IP, NOW(), p_SSID, p_Name, p_Password);
+END //
+
+DELIMITER ;
+
+/* Get ssid and password from ip */
+DELIMITER //
+
+CREATE PROCEDURE GetNetworkCredentials(
+    IN inputIP VARCHAR(15),
+    OUT outputSSID VARCHAR(255),
+    OUT outputPassword VARCHAR(255)
+)
+BEGIN
+    SELECT SSID, Password
+    INTO outputSSID, outputPassword
+    FROM Network
+    WHERE IP = inputIP;
+END //
+
+DELIMITER ;
+
+
 /* Event GET, returns events from the device with that ip*/
+DELIMITER //
+    
 CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
 BEGIN
     SELECT 
@@ -125,6 +160,82 @@ END$$
 
 DELIMITER ;
 
+/* GET for Time Registration*/
+DELIMITER $$
 
+CREATE PROCEDURE GetTimeRegistrationByIP(IN inputIP VARCHAR(15))
+BEGIN
+    SELECT 
+        e.Name AS EventName,
+        tr.StartTime,
+        tr.EndTime
+    FROM 
+        TimeRegistration tr
+    JOIN 
+        Event e ON tr.EventId = e.Id
+    JOIN 
+        Device d ON tr.DeviceId = d.Id
+    WHERE 
+        d.IP = inputIP;
+END $$
 
+DELIMITER ;
+
+/* POST for Time Registration */
+DELIMITER $$
+
+CREATE PROCEDURE InsertTimeRegistration (
+    IN p_EventId INT,
+    IN p_DeviceId INT,
+    IN p_StartTime DATETIME,
+    IN p_EndTime DATETIME,
+    IN p_Status BOOL
+)
+BEGIN
+    -- Insert the time registration record
+    INSERT INTO TimeRegistration (EventId, DeviceId, StartTime, EndTime, Status)
+    VALUES (p_EventId, p_DeviceId, p_StartTime, p_EndTime, p_Status);
+END $$
+
+DELIMITER ;
+
+/* Update for Time Registration */
+DELIMITER $$
+
+CREATE PROCEDURE UpdateTimeRegistration(
+    IN p_EventId INT,
+    IN p_DeviceId INT,
+    IN p_StartTime DATETIME,
+    IN p_EndTime DATETIME,
+    IN p_Status BOOL
+)
+BEGIN
+    -- Update the TimeRegistration table with the given values
+    UPDATE TimeRegistration
+    SET StartTime = p_StartTime,
+        EndTime = p_EndTime,
+        Status = p_Status
+    WHERE EventId = p_EventId
+      AND DeviceId = p_DeviceId;
+END $$
+    
+DELIMITER ;
+
+/* POST Device */
+DELIMITER $$
+
+CREATE PROCEDURE AddDevice(
+    IN deviceName VARCHAR(255), 
+    IN deviceIP VARCHAR(15), 
+    OUT newDeviceId INT)
+BEGIN
+    -- Insert a new device into the Device table
+    INSERT INTO Device (Name, IP) 
+    VALUES (deviceName, deviceIP);
+    
+    -- Retrieve the last inserted device Id
+    SET newDeviceId = LAST_INSERT_ID();
+END $$
+
+DELIMITER ;
 
