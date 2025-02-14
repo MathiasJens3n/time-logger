@@ -39,9 +39,9 @@ CREATE TABLE Network (
     PRIMARY KEY (IP, DateAndTime),
 );
 
-ikke tested lavet off top of head
 
-/* Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password*/
+
+--Checks if the ip is already in network table if not insert itserts it with current time for datetime, SSID, Name and password
 DELIMITER //
 
 CREATE PROCEDURE AddToNetwork (
@@ -57,7 +57,7 @@ END //
 
 DELIMITER ;
 
-/* Get a lisg of all from ip that ip*/
+--Get a lisg of all from ip that ip
 DELIMITER //
 
 CREATE PROCEDURE GetNetworkCredentials(
@@ -72,7 +72,7 @@ END //
 DELIMITER ;
 
 
-/* Event GET, returns events from the device with that ip*/
+--Event GET, returns events from the device with that ip
 DELIMITER //
     
 CREATE PROCEDURE GetEventDetailsByIP(IN inputIP VARCHAR(15))
@@ -91,7 +91,7 @@ END //
 
 DELIMITER ;
 
-/* Event Post inserts new event if the device exist */
+--Event Post inserts new event if the device exist
 DELIMITER $$
 
 CREATE PROCEDURE InsertEvent(
@@ -124,7 +124,7 @@ END$$
 DELIMITER ;
 
 
-/* Update event function, finds the event with the event id and device id and set it to status sent. */
+--Update event function, finds the event with the event id and device id and set it to status sent.
 DELIMITER $$
 
 CREATE PROCEDURE UpdateEventStatus (
@@ -157,7 +157,7 @@ END$$
 
 DELIMITER ;
 
-/* GET for Time Registration*/
+--GET for Time Registration
 DELIMITER $$
 
 CREATE PROCEDURE GetTimeRegistrationByIP(IN inputIP VARCHAR(15))
@@ -178,7 +178,7 @@ END $$
 
 DELIMITER ;
 
-/* POST for Time Registration */
+--POST for Time Registration
 DELIMITER $$
 
 CREATE PROCEDURE InsertTimeRegistration (
@@ -196,7 +196,7 @@ END $$
 
 DELIMITER ;
 
-/* Update for Time Registration */
+--Update for Time Registration
 DELIMITER $$
 
 CREATE PROCEDURE UpdateTimeRegistration(
@@ -218,7 +218,7 @@ END $$
     
 DELIMITER ;
 
-/* POST Device */
+--POST Device
 DELIMITER $$
 
 CREATE PROCEDURE AddDevice(
