@@ -64,12 +64,15 @@ CREATE PROCEDURE GetNetworkCredentials(
     IN inputIP VARCHAR(15)
 )
 BEGIN
-    SELECT*
+    SELECT *
     FROM Network
-    WHERE IP = inputIP;
+    WHERE IP = inputIP
+    ORDER BY DateAndTime DESC
+    LIMIT 1;
 END //
 
 DELIMITER ;
+
 
 
 /*Event GET, returns events from the device with that ip*/
