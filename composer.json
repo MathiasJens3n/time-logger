@@ -11,7 +11,8 @@
       "Repositories\\": "src/Repositories/",
       "Interfaces\\": "src/Repositories/Interfaces/",
       "Config\\": "config/",
-      "Routes\\": "routes/"
+      "Routes\\": "routes/",
+      "DTO\\": "src/DTO"
     }
   }
 }

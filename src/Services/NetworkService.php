@@ -1,6 +1,8 @@
 <?php
+
 namespace Services;
 
+use DTO\NetworkDTO;
 use Interfaces\INetworkRepository;
 use InvalidArgumentException;
 use RuntimeException;
@@ -16,27 +18,23 @@ class NetworkService {
      * Retrieve network information for a device based on its IP address.
      *
      * @param string $ip The IP address of the device.
-     * @return array Associative array with network info:
-     *               - IP (string)
-     *               - SSID (string)
-     *               - Password (string)
+     * @return NetworkDTO A DTO containing SSID and Password.
      * @throws InvalidArgumentException If the IP address is empty.
      * @throws RuntimeException If no network info is found.
      */
-    public function getNetwork(string $ip): array {
+    public function getNetwork(string $ip): NetworkDTO {
         if (empty($ip)) {
             throw new InvalidArgumentException("IP address is required.");
         }
 
-        // Fetch the latest network information
-        $network = $this->networkRepo->getNetwork($ip);
+        // Get the DTO directly from the repository
+        $networkDTO = $this->networkRepo->getNetwork($ip);
 
-        // Check if network data exists
-        if (empty($network)) {
+        if (!$networkDTO) {
             throw new RuntimeException("No network info found for IP: {$ip}");
         }
 
-        return $network;
+        return $networkDTO;
     }
 
     /**
@@ -45,17 +43,16 @@ class NetworkService {
      * @param string $ip The IP address of the device.
      * @param string $ssid The SSID of the network.
      * @param string $password The password of the network.
-     * @return bool True if the network was created successfully, false otherwise.
+     * @return bool True if the network was created successfully.
      * @throws InvalidArgumentException If any required parameter is empty.
      * @throws RuntimeException If network creation fails.
      */
     public function createNetwork(string $ip, string $ssid, string $password): bool {
-        // Validate input
-        if (empty($ip) || empty($ssid) || empty($password)) {
-            throw new InvalidArgumentException("IP, SSID, and Password are required fields.");
+        if (empty($ssid) || empty($password)) {
+            throw new InvalidArgumentException("SSID, and Password are required fields.");
         }
 
-        // Attempt to save the network
+        // Save directly through repository
         $success = $this->networkRepo->saveNetwork($ip, $ssid, $password);
 
         if (!$success) {

@@ -1,8 +1,8 @@
 <?php
-
 namespace Controllers;
 
 use Services\NetworkService;
+use DTO\NetworkDTO;
 
 class NetworkController extends BaseController {
     private NetworkService $networkService;
@@ -13,14 +13,14 @@ class NetworkController extends BaseController {
 
     /**
      * Handle GET /network
-     * Retrieves network information for a device based on its IP.
+     * Retrieves only SSID and Password for a device by IP.
      */
     public function getNetwork(): void {
         $ip = $_GET['ip'] ?? $_SERVER['REMOTE_ADDR'];
 
         try {
             $network = $this->networkService->getNetwork($ip);
-            $this->sendJsonResponse($network);
+            $this->sendJsonResponse($network->toArray());
         } catch (\InvalidArgumentException $e) {
             $this->sendJsonResponse(['error' => $e->getMessage()], 400);
         } catch (\RuntimeException $e) {

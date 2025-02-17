@@ -2,6 +2,7 @@
 
 namespace Repositories;
 
+use DTO\NetworkDTO;
 use Interfaces\INetworkRepository;
 use PDO;
 use PDOException;
@@ -17,26 +18,38 @@ class NetworkRepository implements INetworkRepository
         $this->db = $db;
         $this->logger = $logger;
     }
-
-    public function getNetwork(string $ip): array
+    /**
+     * Retrieve network information by IP.
+     *
+     * @param string $ip The IP address to search.
+     * @return NetworkDTO|null A NetworkDTO if found, null otherwise.
+     */
+    public function getNetwork(string $ip): ?NetworkDTO
     {
-        // Call GetNetworkCredentials stored procedure
         try {
-            $stmt = $this->db->prepare('CALL GetNetworkCredentials(:ip)');
+            $stmt = $this->db->prepare('CALL getNetworkCredentials(:ip)');
             $stmt->bindParam(':ip', $ip, PDO::PARAM_STR);
             $stmt->execute();
 
-            $networks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC); // Use fetch() instead of fetchAll()
 
-            return $networks ?: [];
+            if ($result) {
+                return new NetworkDTO(
+                    ssid: $result['SSID'],
+                    password: $result['Password']
+                );
+            }
+
         } catch (PDOException $e) {
             $this->logger->error('Database error during GetNetworkCredentials', [
                 'message' => $e->getMessage(),
                 'ip' => $ip
             ]);
-            return [];
         }
+        return null;
     }
+
+
 
     public function saveNetwork(string $ip, string $ssid, string $password): bool
     {
